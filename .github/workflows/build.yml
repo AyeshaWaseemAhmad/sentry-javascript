@@ -1101,8 +1101,14 @@ jobs:
         with:
           name: build-output
 
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: 'dev-packages/e2e-tests/test-applications/${{ matrix.test-application }}/package.json'
+
       # Installs Playwright while the job sets up and the app builds.
-      # Started after the artifact downloads: starting next to them made `download-artifact` fail to read the event file.
+      # The runner rewrites the event file whenever a step starts, so actions that parse it on load (`download-artifact`,
+      # `setup-node`) must not run until the `wait` below. Starting next to `download-artifact` made it fail to read it.
       - name: Install Playwright
         id: install-playwright
         background: true
@@ -1111,10 +1117,6 @@ jobs:
           browsers: chromium
           cwd: dev-packages/e2e-tests/test-applications/${{ matrix.test-application }}
 
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: 'dev-packages/e2e-tests/test-applications/${{ matrix.test-application }}/package.json'
       - name: Set up Bun
         if:
           matrix.test-application == 'node-exports-test-app' || contains(matrix.test-application, 'bun') ||
@@ -1234,8 +1236,14 @@ jobs:
           name: build-test-utils-tarball-output
           path: dev-packages/test-utils
 
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: 'dev-packages/e2e-tests/test-applications/${{ matrix.test-application }}/package.json'
+
       # Installs Playwright while the job sets up and the app builds.
-      # Started after the artifact downloads: starting next to them made `download-artifact` fail to read the event file.
+      # The runner rewrites the event file whenever a step starts, so actions that parse it on load (`download-artifact`,
+      # `setup-node`) must not run until the `wait` below. Starting next to `download-artifact` made it fail to read it.
       - name: Install Playwright
         id: install-playwright
         background: true
@@ -1244,10 +1252,6 @@ jobs:
           browsers: chromium
           cwd: dev-packages/e2e-tests/test-applications/${{ matrix.test-application }}
 
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: 'dev-packages/e2e-tests/test-applications/${{ matrix.test-application }}/package.json'
       - name: Set up Bun
         if:
           matrix.test-application == 'node-exports-test-app' || contains(matrix.test-application, 'bun') ||
